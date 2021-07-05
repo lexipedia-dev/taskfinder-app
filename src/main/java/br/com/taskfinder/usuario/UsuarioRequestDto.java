@@ -20,6 +20,16 @@ public class UsuarioRequestDto {
     @NotEmpty
     private String senha;
 
+    public UsuarioRequestDto(){
+
+    }
+
+    public UsuarioRequestDto(String nome, String email, String usuario, String senha){
+        this.nome = nome;
+        this.usuario = usuario;
+        this.email = email;
+        this.senha = senha;
+    }
 
     public String getNome() {
         return nome;
