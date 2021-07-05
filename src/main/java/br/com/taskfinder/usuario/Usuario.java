@@ -14,7 +14,7 @@ public class Usuario {
     @Column(name = "ID")
     @NotNull
     @NotEmpty
-    private Long id;
+    private Integer id;
 
     @Column(name = "NOME")
     @NotNull
@@ -79,7 +79,7 @@ public class Usuario {
         this.perfil = perfil;
     }
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

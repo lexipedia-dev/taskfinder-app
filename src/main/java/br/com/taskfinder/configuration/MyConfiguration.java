@@ -7,16 +7,13 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class MyConfiguration implements WebMvcConfigurer {
-
-    private static final Logger logger = LoggerFactory.getLogger(MyConfiguration.class);
+class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
+        registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "TRACE", "CONNECT");
-
-        logger.info("CORS configurations has been registered");
+                .allowedMethods("*").allowCredentials(true);
     }
+
 }
