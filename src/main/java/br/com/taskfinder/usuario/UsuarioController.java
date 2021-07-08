@@ -4,55 +4,64 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/usuarios")
 @CrossOrigin
+@Transactional
 public class UsuarioController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @PostMapping("/cadastrar")
-    public ResponseEntity<?> cadastrar(@RequestBody UsuarioRequestDto dto){
+    @Autowired
+    private PerfilRepository perfilRepository;
+
+    @PostMapping
+    public ResponseEntity<?> cadastrar(@Valid @RequestBody UsuarioRequestDto dto) {
         Usuario usuario = dto.toModel(dto);
+        Perfil perfil = new Perfil();
+        perfil.setNome("CONTRATANTE");
+        perfilRepository.save(perfil);
         usuarioRepository.save(usuario);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> consultar(@PathVariable Integer id){
+    public ResponseEntity<Usuario> consultar(@PathVariable Integer id) {
         Usuario usuario = usuarioRepository.findById(id).get();
         return ResponseEntity.ok().body(usuario);
     }
 
     @GetMapping
-    public ResponseEntity<List<UsuarioPendenteResponseDto>> getUsers(){
-
-        List<Usuario> usuarios = usuarioRepository.findAll();
-
-        List<UsuarioPendenteResponseDto> usuariosDto = UsuarioPendenteResponseDto.toDtoList(usuarios);
-
-        return ResponseEntity.ok().body(usuariosDto);
-
-    }
-
-    @PostMapping("/teste-cadastro")
-    public ResponseEntity<?> testeCadastro(){
-        UsuarioRequestDto dto1 = new UsuarioRequestDto("Nome 01", "email01@email.com", "Usuario01", "Senha 01");
-        UsuarioRequestDto dto2 = new UsuarioRequestDto("Nome 01", "email01@email.com", "Usuario01", "Senha 01");
-        UsuarioRequestDto dto3 = new UsuarioRequestDto("Nome 01", "email01@email.com", "Usuario01", "Senha 01");
-        UsuarioRequestDto dto4 = new UsuarioRequestDto("Nome 01", "email01@email.com", "Usuario01", "Senha 01");
-
-        usuarioRepository.save(dto1.toModel(dto1));
-        usuarioRepository.save(dto2.toModel(dto2));
-        usuarioRepository.save(dto3.toModel(dto3));
-        usuarioRepository.save(dto4.toModel(dto4));
-
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<Usuario>> buscaTodosUsuarios(){
+        return ResponseEntity.ok().body(usuarioRepository.findAll());
     }
 
 
+    @PostMapping("/{id}/tornar-contratado")
+    public ResponseEntity<?>mudarRoleContratado(@PathVariable Integer id){
+        Usuario usuario = usuarioRepository.findById(id).get();
+        usuario.mudarRoleContratado();
+        return ResponseEntity.ok().body(usuario);
+
+    }
+
+    @PostMapping("/{id}/tornar-contratante")
+    public ResponseEntity<?>mudarRoleContratante(@PathVariable Integer id){
+        Usuario usuario = usuarioRepository.findById(id).get();
+        usuario.mudarRoleContratante();
+        return ResponseEntity.ok().body(usuario);
+    }
+
+    @PostMapping("/{id}/atualizar")
+    public ResponseEntity<?> atualizarCadastro(@PathVariable Integer id, @RequestBody @Valid FormAtualizacao form){
+        Usuario usuario = usuarioRepository.findById(id).get();
+        usuario.atualizarCadastro(form);
+        return ResponseEntity.ok().body(usuario);
+    }
 
 }
